@@ -1,0 +1,143 @@
+:root {
+  --nezu-accent: #397f65;
+  --nezu-surface: #17212b;
+  --nezu-text: #eef3f8;
+  --nezu-border: rgba(255, 255, 255, 0.14);
+}
+
+.nezu-toggle {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--nezu-text) 24%, transparent);
+  cursor: pointer;
+  transition: background 180ms ease-out;
+}
+
+.nezu-toggle.is-checked {
+  background: var(--nezu-accent);
+}
+
+.nezu-toggle > span {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 25%);
+  transition: transform 180ms ease-out;
+}
+
+.nezu-toggle.is-checked > span {
+  transform: translateX(20px);
+}
+
+.nezu-toggle:focus-visible {
+  outline: 2px solid var(--nezu-accent);
+  outline-offset: 3px;
+}
+
+.nezu-toggle:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.nezu-avatar {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+  border-radius: 50%;
+}
+
+.nezu-avatar.has-ring {
+  box-shadow: 0 0 0 2px var(--nezu-accent), 0 0 0 4px var(--nezu-surface);
+}
+
+.nezu-avatar img,
+.nezu-avatar-fallback {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  object-fit: cover;
+}
+
+.nezu-avatar-fallback {
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-weight: 700;
+}
+
+.nezu-avatar-online {
+  position: absolute;
+  right: 1%;
+  bottom: 1%;
+  width: 28%;
+  height: 28%;
+  border: 2px solid var(--nezu-surface);
+  border-radius: 50%;
+  background: #3fd07d;
+}
+
+.nezu-verified-badge,
+.nezu-premium-badge {
+  display: inline-grid;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  color: #fff;
+}
+
+.nezu-verified-badge {
+  width: 16px;
+  height: 16px;
+  background: var(--nezu-accent);
+}
+
+.nezu-verified-badge svg {
+  width: 11px;
+  height: 11px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 3.5;
+}
+
+.nezu-premium-badge {
+  background: linear-gradient(145deg, #a855f7, #6d28d9);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 25%);
+  font-weight: 800;
+}
+
+.nezu-float-notice {
+  position: fixed;
+  z-index: 80;
+  top: 12px;
+  right: 12px;
+  left: 12px;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.nezu-float-notice > div {
+  border: 1px solid var(--nezu-border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--nezu-surface) 94%, transparent);
+  padding: 8px 14px;
+  color: var(--nezu-text);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 18%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nezu-toggle,
+  .nezu-toggle > span {
+    transition-duration: 1ms;
+  }
+}
