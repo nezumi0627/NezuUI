@@ -27,6 +27,9 @@ the reusable primitives independent from a product, backend, account, or API.
 - Do not import from Vyline at runtime. A ported pattern must be adapted into
   `src/components/`, documented in `NOTICE.md`, and retain applicable MIT
   notices.
+- When a service adopts NezuUI, add its verified entry to the `services` array
+  in `src/App.tsx`. Use the `使用中` label only after the service actually uses
+  the listed UI pattern.
 
 ## Validation
 

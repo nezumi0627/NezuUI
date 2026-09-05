@@ -49,6 +49,16 @@ import "./components/nezuui-components.css";
 Ask Codex to use [`skills/nezuui/SKILL.md`](skills/nezuui/SKILL.md) when
 porting or creating a reusable NezuUI component in another project.
 
+## Services using NezuUI
+
+The public catalog has a service registry so adoption stays visible as NezuUI
+moves into other projects. Add only verified integrations to the `services`
+array in `src/App.tsx`.
+
+| Service | Status | Relationship |
+| --- | --- | --- |
+| [Vyline](https://github.com/nezumi0627/Vyline) | Vylineで使用中 | The initial UI patterns were organized into portable NezuUI primitives. |
+
 ## Architecture
 
 ```text
