@@ -8,6 +8,7 @@ export type AvatarProps = {
   online?: boolean
   ring?: boolean
   size?: number
+  icon?: ReactNode
   children?: ReactNode
 }
 
@@ -20,6 +21,7 @@ export function Avatar({
   online = false,
   ring = false,
   size = 44,
+  icon,
   children,
 }: AvatarProps) {
   const [failed, setFailed] = useState(false)
@@ -36,10 +38,10 @@ export function Avatar({
           className="nezu-avatar-fallback"
           style={{
             background: `linear-gradient(145deg, ${color}, color-mix(in oklab, ${color} 55%, #000))`,
-            fontSize: size * 0.48,
+            fontSize: size * 0.5,
           }}
         >
-          {children ?? glyph}
+          {icon ?? children ?? glyph}
         </span>
       )}
       {online && <span className="nezu-avatar-online" aria-label="オンライン" />}

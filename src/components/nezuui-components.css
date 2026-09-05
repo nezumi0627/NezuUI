@@ -55,7 +55,7 @@
 }
 
 .nezu-avatar.has-ring {
-  box-shadow: 0 0 0 2px var(--nezu-accent), 0 0 0 4px var(--nezu-surface);
+  box-shadow: 0 0 0 2px var(--nezu-surface), 0 0 0 4px var(--nezu-accent);
 }
 
 .nezu-avatar img,
@@ -75,8 +75,8 @@
 
 .nezu-avatar-online {
   position: absolute;
-  right: 1%;
-  bottom: 1%;
+  right: 0;
+  bottom: 0;
   width: 28%;
   height: 28%;
   border: 2px solid var(--nezu-surface);
@@ -84,7 +84,7 @@
   background: #3fd07d;
 }
 
-.nezu-verified-badge,
+.nezu-official-badge,
 .nezu-premium-badge {
   display: inline-grid;
   flex: 0 0 auto;
@@ -93,17 +93,18 @@
   color: #fff;
 }
 
-.nezu-verified-badge {
-  width: 16px;
-  height: 16px;
-  background: var(--nezu-accent);
+.nezu-official-badge {
+  width: 14px;
+  height: 14px;
+  margin-left: 4px;
+  background: var(--vy-official, #06c755);
 }
 
-.nezu-verified-badge svg {
-  width: 11px;
-  height: 11px;
+.nezu-official-badge svg {
+  width: 10px;
+  height: 10px;
   fill: none;
-  stroke: currentColor;
+  stroke: #fff;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-width: 3.5;
