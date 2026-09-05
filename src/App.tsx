@@ -3,12 +3,21 @@ import { FloatNotice } from './components'
 import { nezuIconMap } from './components/icon-map'
 import { IconPlay, IconSearch } from './components/icons'
 import { VylineComponentsCatalog, VylineInventoryPreview } from './CatalogComponents'
+import { SkillPage } from './SkillPage'
 import { vylineIconNames, vylineUiInventory, type UiInventoryItem } from './data/vyline-ui'
 import './App.css'
 
-type Section = 'components' | 'motion' | 'icons' | 'tokens' | 'inventory' | 'projects' | 'plan' | 'services'
+type Section = 'components' | 'motion' | 'icons' | 'tokens' | 'inventory' | 'projects' | 'plan' | 'services' | 'skill'
 const sections: Array<{ id: Section; title: string; subtitle: string; icon: string }> = [
-  { id: 'components', title: 'コンポーネント', subtitle: 'Components', icon: '◫' }, { id: 'motion', title: 'アニメーション', subtitle: 'Motion', icon: '▷' }, { id: 'icons', title: 'アイコン', subtitle: 'Icons', icon: '✦' }, { id: 'tokens', title: 'デザイントークン', subtitle: 'Foundations', icon: '◉' }, { id: 'inventory', title: '全UI・ソース一覧', subtitle: 'Source inventory', icon: '⌘' }, { id: 'projects', title: 'プロジェクト', subtitle: 'Projects', icon: '▣' }, { id: 'plan', title: '共通化の候補', subtitle: 'Extraction notes', icon: '≡' }, { id: 'services', title: '利用サービス', subtitle: 'Services', icon: '↗' },
+  { id: 'components', title: 'コンポーネント', subtitle: 'Components', icon: '◫' },
+  { id: 'motion', title: 'アニメーション', subtitle: 'Motion', icon: '▷' },
+  { id: 'icons', title: 'アイコン', subtitle: 'Icons', icon: '✦' },
+  { id: 'tokens', title: 'デザイントークン', subtitle: 'Foundations', icon: '◉' },
+  { id: 'inventory', title: '全UI・ソース一覧', subtitle: 'Source inventory', icon: '⌘' },
+  { id: 'projects', title: 'プロジェクト', subtitle: 'Projects', icon: '▣' },
+  { id: 'plan', title: '共通化の候補', subtitle: 'Extraction notes', icon: '≡' },
+  { id: 'services', title: '利用サービス', subtitle: 'Services', icon: '↗' },
+  { id: 'skill', title: 'Skill', subtitle: 'AI adoption', icon: '◇' },
 ]
 const motions = [['fade-up', 'Entry', '160–220ms / ease-out'], ['pop', 'Confirmation', '短い反応にだけ使う'], ['slide', 'Panel', '距離を小さく保つ']] as const
 const tokens = [['--nezu-accent', '#397f65'], ['--nezu-surface', '#17212b'], ['--nezu-text', '#eef3f8'], ['--nezu-border', 'rgba(255, 255, 255, .14)']] as const
@@ -26,33 +35,70 @@ const portableImports: Record<string, { name: string; usage: string }> = {
 }
 
 function App() {
-  const [section, setSection] = useState<Section>('components'); const [enabled, setEnabled] = useState(true); const [notice, setNotice] = useState(false); const [light, setLight] = useState(false); const [query, setQuery] = useState(''); const [category, setCategory] = useState('すべて'); const [copied, setCopied] = useState(false); const [selectedUi, setSelectedUi] = useState<UiInventoryItem | null>(null)
+  const [section, setSection] = useState<Section>('components')
+  const [enabled, setEnabled] = useState(true)
+  const [notice, setNotice] = useState(false)
+  const [light, setLight] = useState(false)
+  const [query, setQuery] = useState('')
+  const [category, setCategory] = useState('すべて')
+  const [copied, setCopied] = useState(false)
+  const [selectedUi, setSelectedUi] = useState<UiInventoryItem | null>(null)
   const current = sections.find((item) => item.id === section)!
+
   useEffect(() => { document.documentElement.dataset.nezuTheme = light ? 'light' : 'dark' }, [light])
-  useEffect(() => { if (!notice) return; const timer = window.setTimeout(() => setNotice(false), 2400); return () => window.clearTimeout(timer) }, [notice])
+  useEffect(() => {
+    if (!notice) return
+    const timer = window.setTimeout(() => setNotice(false), 2400)
+    return () => window.clearTimeout(timer)
+  }, [notice])
+
   const files = useMemo(() => vylineUiInventory.filter((item) => (category === 'すべて' || category === item.category) && `${item.title} ${item.path} ${item.details}`.toLowerCase().includes(query.toLowerCase())), [category, query])
   const navigate = (id: Section) => { setSelectedUi(null); setSection(id); setQuery(''); setCategory('すべて'); window.scrollTo({ top: 0, behavior: 'smooth' }) }
   const copy = async () => { await navigator.clipboard?.writeText(componentSource); setCopied(true); window.setTimeout(() => setCopied(false), 1800) }
-  const description = section === 'components' ? 'Vylineの小さな部品からチャット画面の細部まで、見て触れるカタログ。' : section === 'inventory' ? 'Vylineで見つけたUIを細かい単位まで検索し、元ソースへ直接たどれます。' : section === 'projects' ? 'NezuUIの採用元・採用先プロジェクトをここから開けます。' : section === 'plan' ? '現状の重複と依存関係から、NezuUIへ切り出す順序を整理します。' : section === 'services' ? 'NezuUIを使うサービスと、導入中のUIパターンを公開します。' : '既存の定義を観察し、移植可能なインターフェースの基礎を整えます。'
+  const description = section === 'components' ? 'Vylineの小さな部品からチャット画面の細部まで、見て触れるカタログ。'
+    : section === 'inventory' ? 'Vylineで見つけたUIを細かい単位まで検索し、元ソースへ直接たどれます。'
+      : section === 'projects' ? 'NezuUIの採用元・採用先プロジェクトをここから開けます。'
+        : section === 'plan' ? '現状の重複と依存関係から、NezuUIへ切り出す順序を整理します。'
+          : section === 'services' ? 'NezuUIを使うサービスと、導入中のUIパターンを公開します。'
+            : section === 'skill' ? 'AIへそのまま渡せるNezuUIの移植・実装ルールをまとめています。'
+              : '既存の定義を観察し、移植可能なインターフェースの基礎を整えます。'
+
   return <div className="nu-app">
-    {notice && <FloatNotice>NezuUI のサンプル通知です</FloatNotice>}<a className="nu-skip" href="#catalog-content">コンテンツへ移動</a>
-    <aside className="nu-sidebar"><a className="nu-brand" href="#top"><span className="nu-mark" aria-hidden="true">nu</span><span className="nu-brand-copy">NezuUI<small>INTERFACE COLLECTION</small></span></a><p className="nu-nav-label">LIBRARY</p><nav aria-label="NezuUIカタログ">{sections.map((item) => <button type="button" key={item.id} data-section={item.id} aria-current={section === item.id ? 'page' : undefined} onClick={() => navigate(item.id)}><span aria-hidden="true">{item.icon}</span><span>{item.title}</span>{item.id === 'inventory' && <small>{vylineUiInventory.length}</small>}</button>)}</nav><a className="nu-sidebar-github" href="https://github.com/nezumi0627/NezuUI" target="_blank" rel="noreferrer"><span>GitHub</span><small>NezuUI repository ↗</small></a></aside>
-    <div className="nu-main"><header className="nu-topbar"><div>Library <span>/</span> <strong>{current.subtitle}</strong></div><button type="button" className="nu-theme-button" onClick={() => setLight(!light)}>◐ {light ? 'Light' : 'Dark'} <span>テーマ切替</span></button></header><main id="catalog-content" tabIndex={-1}>
-      <div className="nu-heading" id="top"><div><p className="nu-eyebrow">NEZUUI / {current.subtitle.toUpperCase()}</p><h1>{current.title}<span>.</span></h1><p className="nu-description">{description}</p></div><span className="nu-edition">01<span>COLLECTION</span></span></div><div className="nu-summary"><span><strong>{vylineUiInventory.length}</strong>UI項目</span><span><strong>{vylineUiInventory.filter((item) => item.status !== 'ソース参照').length}</strong>カタログ表示</span><span><strong>{vylineIconNames.length}</strong>Icons</span><span><strong>1</strong>Project</span></div>
-      {section === 'components' && <VylineComponentsCatalog enabled={enabled} setEnabled={setEnabled} setNotice={setNotice} copied={copied} copy={copy} />}
-      {section === 'motion' && <><div className="nu-tools"><button type="button" className="nu-button" onClick={() => setNotice(true)}><IconPlay size={15} /> すべて再生</button><small>OSの「動きを減らす」設定を優先します。</small></div><div className="nu-grid">{motions.map(([name, title, detail]) => <article className="nu-specimen" key={name}><SpecimenHead title={name} /><div className="nu-stage"><span className={`nu-motion-sample nu-${name}`}><IconPlay size={18} /> <span>Hello, NezuUI.</span></span></div><SpecimenFoot detail={`${title} · ${detail}`} /></article>)}</div></>}
-      {section === 'icons' && <><Search label="アイコンを検索" query={query} setQuery={setQuery} placeholder="名前で検索…" /><p className="nu-results" role="status">Vyline icons.tsx から {vylineIconNames.length} 個</p><div className="nu-icon-grid">{vylineIconNames.filter((name) => name.toLowerCase().includes(query.toLowerCase())).map((name) => { const Icon = nezuIconMap[name]; return <div className="nu-icon-cell" key={name}><span aria-hidden="true"><Icon size={24} /></span><code>Icon{name}</code></div> })}</div></>}
-      {section === 'tokens' && <><p className="nu-note">色は導入先でCSS変数として上書きします。色を部品へ閉じ込めません。</p><div className="nu-token-grid">{tokens.map(([name, value]) => <div className="nu-token" key={name}><span style={{ background: `var(${name})` }} /><code>{name}</code><small>{value}</small></div>)}</div></>}
-      {section === 'inventory' && (selectedUi ? <UiDetail item={selectedUi} onBack={() => setSelectedUi(null)} /> : <><Search label="UI一覧を検索" query={query} setQuery={setQuery} placeholder="UI名・機能・ファイルパスで検索…" /><div className="nu-filters">{['すべて', ...new Set(vylineUiInventory.map((item) => item.category))].map((item) => <button type="button" key={item} aria-pressed={category === item} onClick={() => setCategory(item)}>{item}</button>)}</div><p className="nu-results" role="status">{files.length} UI · Vyline由来の棚卸し</p><div className="nu-inventory">{files.map((item) => <button type="button" className="nu-inventory-row" key={`${item.path}:${item.title}`} onClick={() => { setSelectedUi(item); window.scrollTo({ top: 0, behavior: 'smooth' }) }}><span className="nu-file-icon">⌘</span><span className="nu-inventory-name"><strong>{item.title}</strong><code>{item.path}</code><small>{item.details}</small></span><span className="nu-category">{item.category}</span><span className={`nu-tag ${item.status === '実表示あり' ? 'nu-tag-live' : ''}`}>{item.status}</span><span aria-hidden="true">›</span></button>)}</div></>)}
-      {section === 'projects' && <Projects />}
-      {section === 'plan' && <div className="nu-plan">{plans.map(([number, title, planDescription]) => <article key={number}><span>{number}</span><div><h2>{title}</h2><p>{planDescription}</p><button type="button" onClick={() => navigate('inventory')}>対象コードを見る ↗</button></div><span className="nu-tag">候補</span></article>)}<p className="nu-note">このページは棚卸し段階です。既存アプリの大規模な共通化は、部品ごとに検証してから進めます。</p></div>}
-      {section === 'services' && <div className="nu-service-card"><div className="nu-service-head"><span className="nu-service-mark">V</span><div><h2>Vyline</h2><a href="https://github.com/nezumi0627/Vyline">プロジェクトを見る ↗</a></div><span className="nu-status-tag">Vylineで使用中</span></div><p>NezuUIの原点となるUIパターンを使うLINEクライアントです。ここで整理した部品は、他のプロジェクトにも移植できます。</p><div className="nu-patterns"><span>Message Composer</span><span>Toggle</span><span>Avatar</span><span>Badges</span><span>Float notice</span></div></div>}
-      <footer className="nu-footer"><span>NezuUI <span>—</span> Built from Vyline</span><a href="https://github.com/nezumi0627/NezuUI">GitHub ↗</a></footer>
-    </main></div>
+    {notice && <FloatNotice>NezuUI のサンプル通知です</FloatNotice>}
+    <a className="nu-skip" href="#catalog-content">コンテンツへ移動</a>
+    <aside className="nu-sidebar">
+      <a className="nu-brand" href="#top"><span className="nu-mark" aria-hidden="true">nu</span><span className="nu-brand-copy">NezuUI<small>INTERFACE COLLECTION</small></span></a>
+      <p className="nu-nav-label">LIBRARY</p>
+      <nav aria-label="NezuUIカタログ">{sections.map((item) => <button type="button" key={item.id} data-section={item.id} aria-current={section === item.id ? 'page' : undefined} onClick={() => navigate(item.id)}><span aria-hidden="true">{item.icon}</span><span>{item.title}</span>{item.id === 'inventory' && <small>{vylineUiInventory.length}</small>}</button>)}</nav>
+      <a className="nu-sidebar-github" href="https://github.com/nezumi0627/NezuUI" target="_blank" rel="noreferrer"><span>GitHub</span><small>NezuUI repository ↗</small></a>
+    </aside>
+
+    <div className="nu-main">
+      <header className="nu-topbar"><div>Library <span>/</span> <strong>{current.subtitle}</strong></div><button type="button" className="nu-theme-button" onClick={() => setLight(!light)}>◐ {light ? 'Light' : 'Dark'} <span>テーマ切替</span></button></header>
+      <main id="catalog-content" tabIndex={-1}>
+        <div className="nu-heading" id="top"><div><p className="nu-eyebrow">NEZUUI / {current.subtitle.toUpperCase()}</p><h1>{current.title}<span>.</span></h1><p className="nu-description">{description}</p></div><span className="nu-edition">01<span>COLLECTION</span></span></div>
+        <div className="nu-summary"><span><strong>{vylineUiInventory.length}</strong>UI項目</span><span><strong>{vylineUiInventory.filter((item) => item.status !== 'ソース参照').length}</strong>カタログ表示</span><span><strong>{vylineIconNames.length}</strong>Icons</span><span><strong>1</strong>Project</span></div>
+
+        {section === 'components' && <VylineComponentsCatalog enabled={enabled} setEnabled={setEnabled} setNotice={setNotice} copied={copied} copy={copy} />}
+        {section === 'motion' && <><div className="nu-tools"><button type="button" className="nu-button" onClick={() => setNotice(true)}><IconPlay size={15} /> すべて再生</button><small>OSの「動きを減らす」設定を優先します。</small></div><div className="nu-grid">{motions.map(([name, title, detail]) => <article className="nu-specimen" key={name}><SpecimenHead title={name} /><div className="nu-stage"><span className={`nu-motion-sample nu-${name}`}><IconPlay size={18} /> <span>Hello, NezuUI.</span></span></div><SpecimenFoot detail={`${title} · ${detail}`} /></article>)}</div></>}
+        {section === 'icons' && <><Search label="アイコンを検索" query={query} setQuery={setQuery} placeholder="名前で検索…" /><p className="nu-results" role="status">Vyline icons.tsx から {vylineIconNames.length} 個</p><div className="nu-icon-grid">{vylineIconNames.filter((name) => name.toLowerCase().includes(query.toLowerCase())).map((name) => { const Icon = nezuIconMap[name]; return <div className="nu-icon-cell" key={name}><span aria-hidden="true"><Icon size={24} /></span><code>Icon{name}</code></div> })}</div></>}
+        {section === 'tokens' && <><p className="nu-note">色は導入先でCSS変数として上書きします。色を部品へ閉じ込めません。</p><div className="nu-token-grid">{tokens.map(([name, value]) => <div className="nu-token" key={name}><span style={{ background: `var(${name})` }} /><code>{name}</code><small>{value}</small></div>)}</div></>}
+        {section === 'inventory' && (selectedUi ? <UiDetail item={selectedUi} onBack={() => setSelectedUi(null)} /> : <><Search label="UI一覧を検索" query={query} setQuery={setQuery} placeholder="UI名・機能・ファイルパスで検索…" /><div className="nu-filters">{['すべて', ...new Set(vylineUiInventory.map((item) => item.category))].map((item) => <button type="button" key={item} aria-pressed={category === item} onClick={() => setCategory(item)}>{item}</button>)}</div><p className="nu-results" role="status">{files.length} UI · Vyline由来の棚卸し</p><div className="nu-inventory">{files.map((item) => <button type="button" className="nu-inventory-row" key={`${item.path}:${item.title}`} onClick={() => { setSelectedUi(item); window.scrollTo({ top: 0, behavior: 'smooth' }) }}><span className="nu-file-icon">⌘</span><span className="nu-inventory-name"><strong>{item.title}</strong><code>{item.path}</code><small>{item.details}</small></span><span className="nu-category">{item.category}</span><span className={`nu-tag ${item.status === '実表示あり' ? 'nu-tag-live' : ''}`}>{item.status}</span><span aria-hidden="true">›</span></button>)}</div></>)}
+        {section === 'projects' && <Projects />}
+        {section === 'plan' && <div className="nu-plan">{plans.map(([number, title, planDescription]) => <article key={number}><span>{number}</span><div><h2>{title}</h2><p>{planDescription}</p><button type="button" onClick={() => navigate('inventory')}>対象コードを見る ↗</button></div><span className="nu-tag">候補</span></article>)}<p className="nu-note">このページは棚卸し段階です。既存アプリの大規模な共通化は、部品ごとに検証してから進めます。</p></div>}
+        {section === 'services' && <div className="nu-service-card"><div className="nu-service-head"><span className="nu-service-mark">V</span><div><h2>Vyline</h2><a href="https://github.com/nezumi0627/Vyline">プロジェクトを見る ↗</a></div><span className="nu-status-tag">Vylineで使用中</span></div><p>NezuUIの原点となるUIパターンを使うLINEクライアントです。ここで整理した部品は、他のプロジェクトにも移植できます。</p><div className="nu-patterns"><span>Message Composer</span><span>Toggle</span><span>Avatar</span><span>Badges</span><span>Float notice</span></div></div>}
+        {section === 'skill' && <SkillPage />}
+
+        <footer className="nu-footer"><span>NezuUI <span>—</span> Built from Vyline</span><a href="https://github.com/nezumi0627/NezuUI">GitHub ↗</a></footer>
+      </main>
+    </div>
   </div>
 }
 
-function Projects() { return <div className="nu-projects"><article className="nu-project-card"><div className="nu-project-visual"><span className="nu-service-mark">V</span><span className="nu-project-pulse" /></div><div className="nu-project-content"><div className="nu-project-title"><div><p className="nu-eyebrow">SOURCE PROJECT</p><h2>Vyline</h2></div><span className="nu-status-tag">NezuUI 採用元</span></div><p>NezuUIの原点。チャット、Message Composer、設定、通話、ダイアログ、アイコンなどのUIパターンを継続的に棚卸ししています。</p><div className="nu-patterns"><span>Composer</span><span>Chat</span><span>Message</span><span>Settings</span><span>Call</span><span>Dialog</span><span>45 Icons</span></div><div className="nu-project-actions"><a className="nu-button nu-primary-link" href="https://github.com/nezumi0627/Vyline" target="_blank" rel="noreferrer">Vylineを開く ↗</a><button type="button" className="nu-button" onClick={() => document.querySelector<HTMLButtonElement>('[data-section="inventory"]')?.click()}>UI一覧を見る</button></div></div></article></div> }
+function Projects() {
+  return <div className="nu-projects"><article className="nu-project-card"><div className="nu-project-visual"><span className="nu-service-mark">V</span><span className="nu-project-pulse" /></div><div className="nu-project-content"><div className="nu-project-title"><div><p className="nu-eyebrow">SOURCE PROJECT</p><h2>Vyline</h2></div><span className="nu-status-tag">NezuUI 採用元</span></div><p>NezuUIの原点。チャット、Message Composer、設定、通話、ダイアログ、アイコンなどのUIパターンを継続的に棚卸ししています。</p><div className="nu-patterns"><span>Composer</span><span>Chat</span><span>Message</span><span>Settings</span><span>Call</span><span>Dialog</span><span>45 Icons</span></div><div className="nu-project-actions"><a className="nu-button nu-primary-link" href="https://github.com/nezumi0627/Vyline" target="_blank" rel="noreferrer">Vylineを開く ↗</a><button type="button" className="nu-button" onClick={() => document.querySelector<HTMLButtonElement>('[data-section="inventory"]')?.click()}>UI一覧を見る</button></div></div></article></div>
+}
+
 function SpecimenHead({ title }: { title: string }) { return <div className="nu-specimen-head"><h3>{title}</h3><span className="nu-tag">実コンポーネント</span></div> }
 function SpecimenFoot({ detail }: { detail: string }) { return <div className="nu-specimen-foot"><p>{detail}</p><button type="button" onClick={() => document.querySelector<HTMLButtonElement>('[data-section="inventory"]')?.click()}>ソース一覧を見る ↗</button></div> }
 function Search({ label, query, setQuery, placeholder }: { label: string; query: string; setQuery: (value: string) => void; placeholder: string }) { return <div className="nu-search"><IconSearch size={17} /><input aria-label={label} placeholder={placeholder} value={query} onChange={(event) => setQuery(event.target.value)} /></div> }
@@ -66,6 +112,7 @@ function UiDetail({ item, onBack }: { item: UiInventoryItem; onBack: () => void 
   const [previewScale, setPreviewScale] = useState(1)
   const copySnippet = async () => { await navigator.clipboard?.writeText(snippet); setDidCopy(true); window.setTimeout(() => setDidCopy(false), 1500) }
   const resetPreview = () => { setPreviewScale(1); setPreviewVersion((value) => value + 1) }
+
   return <section className="nu-detail"><button type="button" className="nu-detail-back" onClick={onBack}>← UI一覧へ戻る</button><div className="nu-detail-head"><div><p className="nu-eyebrow">{item.category.toUpperCase()} / VYLINE</p><h2>{item.title}</h2><p>{item.details}</p></div><div className="nu-detail-tags"><span className="nu-status-tag">Vylineで使用中</span><span className="nu-tag">{item.status}</span></div></div><div className="nu-detail-grid"><article className="nu-detail-card"><div className="nu-detail-card-title"><h3>Live preview</h3><div className="nu-preview-controls" aria-label="Live preview controls"><button type="button" aria-label="プレビューを縮小" onClick={() => setPreviewScale((value) => Math.max(.8, Number((value - .1).toFixed(1))))}>−</button><span>{Math.round(previewScale * 100)}%</span><button type="button" aria-label="プレビューを拡大" onClick={() => setPreviewScale((value) => Math.min(1.2, Number((value + .1).toFixed(1))))}>＋</button><button type="button" onClick={resetPreview}>リセット</button></div></div><div className="nu-detail-preview"><div className="nu-detail-preview-inner" style={{ transform: `scale(${previewScale})` }}><VylineInventoryPreview key={previewVersion} item={item} /></div></div></article><article className="nu-detail-card"><h3>{portable ? 'Import' : 'NezuUI export status'}</h3>{portable ? <pre className="nu-code"><code>{snippet}</code></pre> : <div className="nu-import-pending"><strong>まだ共通コンポーネントとしてexportされていません</strong><p>Vylineの実装を棚卸し済みです。正確な表示を移植できたものだけLive previewとして公開します。</p></div>}<div className="nu-detail-actions">{portable && <button type="button" className="nu-button" onClick={() => void copySnippet()}>{didCopy ? 'コピーしました' : 'コードをコピー'}</button>}<a className="nu-button" href={sourceUrl} target="_blank" rel="noreferrer">Vylineの元ソース ↗</a></div></article></div><div className="nu-detail-meta"><span><small>Category</small>{item.category}</span><span><small>Source</small><code>{item.path}</code></span><span><small>Service</small>Vyline</span></div></section>
 }
 
