@@ -8,10 +8,11 @@ backend, a product store, or a component-runtime dependency.
 
 ## Included
 
-- A GitHub Pages catalog with live Toggle, Avatar, badge, notification, token,
-  and motion specimens.
+- A GitHub Pages catalog with live Message Composer, Toggle, Avatar, badge,
+  notification, token, and motion specimens.
 - Portable `Toggle`, `Avatar`, `VerifiedBadge`, `PremiumBadge`, and
-  `FloatNotice` source in `src/components/`.
+  `FloatNotice` source in `src/components/`, plus a portable interactive
+  `MessageComposer` with attachment, menu, mute, reply, AI, and voice states.
 - CSS-variable theming through `--nezu-accent`, `--nezu-surface`,
   `--nezu-text`, and `--nezu-border`.
 - Reuse guidance for future projects and a Codex skill for portable component
@@ -40,10 +41,14 @@ data, API calls, routing, and business rules; NezuUI owns presentational
 semantics and interaction feedback.
 
 ```tsx
-import { Toggle } from "./components";
-import "./components/nezuui-components.css";
+import { MessageComposer } from "./components";
 
-<Toggle checked={enabled} onCheckedChange={setEnabled} label="通知を受け取る" />
+<MessageComposer
+  value={draft}
+  onValueChange={setDraft}
+  onSend={send}
+  menuItems={menuItems}
+/>
 ```
 
 Ask Codex to use [`skills/nezuui/SKILL.md`](skills/nezuui/SKILL.md) when

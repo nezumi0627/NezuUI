@@ -1,0 +1,190 @@
+.nezu-message-composer-root {
+  position: relative;
+  width: min(680px, 100%);
+  color: var(--nezu-text);
+}
+
+.nezu-message-composer-surface {
+  position: relative;
+  border: 1px solid var(--nezu-border);
+  border-radius: 22px;
+  padding: 8px;
+  background: var(--nezu-surface);
+  box-shadow: 0 6px 20px color-mix(in oklab, var(--nezu-text) 8%, transparent);
+  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+}
+
+.nezu-message-composer-surface.is-focused {
+  transform: translateY(-2px);
+  border-color: color-mix(in oklab, var(--nezu-text) 25%, var(--nezu-border));
+  box-shadow: 0 10px 28px color-mix(in oklab, var(--nezu-text) 13%, transparent);
+}
+
+.nezu-message-composer-surface.is-dragging { border-style: dashed; border-color: color-mix(in oklab, var(--nezu-text) 40%, var(--nezu-border)); }
+
+.nezu-message-composer-drop {
+  position: absolute;
+  z-index: 12;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 22px;
+  background: color-mix(in oklab, var(--nezu-surface) 88%, transparent);
+  backdrop-filter: blur(6px);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.nezu-message-composer-reply {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  margin-bottom: 8px;
+  overflow: hidden;
+  border: 1px solid var(--nezu-border);
+  border-left: 3px solid var(--nezu-accent);
+  border-radius: 12px;
+  background: var(--nezu-surface);
+}
+
+.nezu-message-composer-reply > div { display: grid; min-width: 0; flex: 1; gap: 2px; padding: 8px 12px; }
+.nezu-message-composer-reply strong { color: var(--nezu-accent); font-size: 12px; }
+.nezu-message-composer-reply span { overflow: hidden; color: color-mix(in oklab, var(--nezu-text) 62%, transparent); font-size: 14px; text-overflow: ellipsis; white-space: nowrap; }
+.nezu-message-composer-reply button { width: 40px; border: 0; color: color-mix(in oklab, var(--nezu-text) 62%, transparent); background: transparent; }
+.nezu-message-composer-reply button:hover { color: var(--nezu-text); background: color-mix(in oklab, var(--nezu-text) 7%, transparent); }
+
+.nezu-message-composer-attachments { display: flex; align-items: center; gap: 8px; overflow-x: auto; margin-bottom: 8px; padding: 0 4px 4px; }
+.nezu-message-composer-attachment { position: relative; width: 64px; height: 64px; flex: 0 0 64px; overflow: hidden; border: 1px solid var(--nezu-border); border-radius: 12px; background: color-mix(in oklab, var(--nezu-surface) 88%, var(--nezu-text)); }
+.nezu-message-composer-attachment img, .nezu-message-composer-attachment video { width: 100%; height: 100%; object-fit: cover; }
+.nezu-message-composer-attachment button { position: absolute; top: 4px; right: 4px; display: grid; width: 22px; height: 22px; place-items: center; border: 0; border-radius: 50%; color: #fff; background: rgb(0 0 0 / 62%); }
+.nezu-message-composer-video-play { position: absolute; inset: 50% auto auto 50%; display: grid; width: 26px; height: 26px; translate: -50% -50%; place-items: center; border-radius: 50%; color: #fff; background: rgb(0 0 0 / 52%); pointer-events: none; }
+
+.nezu-message-composer-row { display: grid; grid-template-columns: auto minmax(54px, 1fr) auto; align-items: end; gap: 2px; }
+.nezu-message-composer-left, .nezu-message-composer-right { display: flex; align-items: center; gap: 2px; padding-bottom: 2px; }
+.nezu-message-composer-plus-wrap { position: relative; }
+.nezu-message-composer-icon, .nezu-message-composer-mic {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  color: color-mix(in oklab, var(--nezu-text) 62%, transparent);
+  background: transparent;
+  transition: color 160ms ease, background-color 160ms ease, transform 160ms ease;
+}
+.nezu-message-composer-icon:hover, .nezu-message-composer-icon.is-active { color: var(--nezu-text); background: color-mix(in oklab, var(--nezu-text) 7%, transparent); }
+.nezu-message-composer-icon.is-active { color: var(--nezu-accent); }
+.nezu-message-composer-icon:active, .nezu-message-composer-mic:active, .nezu-message-composer-send:active { transform: scale(.95); }
+.nezu-message-composer-icon:focus-visible, .nezu-message-composer-mic:focus-visible, .nezu-message-composer-send:focus-visible, .nezu-message-composer-menu button:focus-visible { outline: 2px solid var(--nezu-accent); outline-offset: 2px; }
+.nezu-message-composer-icon:disabled, .nezu-message-composer-mic:disabled, .nezu-message-composer-send:disabled { cursor: not-allowed; opacity: .5; }
+.nezu-message-composer-plus { display: grid; transition: transform 180ms ease; }
+.nezu-message-composer-plus.is-open { transform: rotate(45deg); }
+
+.nezu-message-composer-menu {
+  position: absolute;
+  z-index: 20;
+  bottom: calc(100% + 12px);
+  left: 0;
+  width: 256px;
+  overflow: hidden;
+  border: 1px solid var(--nezu-border);
+  border-radius: 16px;
+  padding: 6px;
+  background: var(--nezu-surface);
+  box-shadow: 0 14px 36px color-mix(in oklab, var(--nezu-text) 16%, transparent);
+  animation: nezu-composer-pop 160ms ease-out;
+}
+.nezu-message-composer-menu > button { display: flex; width: 100%; align-items: center; gap: 12px; border: 0; border-radius: 12px; padding: 10px; color: var(--nezu-text); background: transparent; text-align: left; }
+.nezu-message-composer-menu > button:hover { background: color-mix(in oklab, var(--nezu-text) 6%, transparent); }
+.nezu-message-composer-menu > button:disabled { cursor: not-allowed; opacity: .45; }
+.nezu-message-composer-menu > button > span:last-child { display: grid; min-width: 0; gap: 2px; }
+.nezu-message-composer-menu strong { font-size: 13px; font-weight: 600; }
+.nezu-message-composer-menu strong small { font-size: 10px; }
+.nezu-message-composer-menu > button > span:last-child > small { overflow: hidden; color: color-mix(in oklab, var(--nezu-text) 58%, transparent); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.nezu-message-composer-menu-icon { display: grid; width: 36px; height: 36px; flex: 0 0 36px; place-items: center; border-radius: 9px; background: color-mix(in oklab, var(--nezu-text) 7%, transparent); }
+.nezu-message-composer-menu-icon svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; }
+
+.nezu-message-composer-sticker-panel {
+  position: absolute;
+  z-index: 20;
+  bottom: calc(100% + 12px);
+  left: 0;
+  width: min(360px, calc(100vw - 40px));
+  overflow: hidden;
+  border: 1px solid var(--nezu-border);
+  border-radius: 18px;
+  background: var(--nezu-surface);
+  box-shadow: 0 14px 36px color-mix(in oklab, var(--nezu-text) 16%, transparent);
+  animation: nezu-composer-pop 160ms ease-out;
+}
+.nezu-message-composer-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; border-bottom: 1px solid var(--nezu-border); padding: 6px; }
+.nezu-message-composer-tabs button { border: 0; border-radius: 10px; padding: 8px 10px; color: color-mix(in oklab, var(--nezu-text) 60%, transparent); background: transparent; font: inherit; font-size: 12px; font-weight: 600; }
+.nezu-message-composer-tabs button[aria-selected='true'] { color: var(--nezu-text); background: color-mix(in oklab, var(--nezu-text) 7%, transparent); }
+.nezu-message-composer-sticker-body { padding: 10px; }
+.nezu-message-composer-sticker-grid, .nezu-message-composer-emoji-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+.nezu-message-composer-emoji-grid { grid-template-columns: repeat(6, 1fr); }
+.nezu-message-composer-sticker-grid button, .nezu-message-composer-emoji-grid button { display: grid; min-width: 0; aspect-ratio: 1; place-items: center; border: 0; border-radius: 12px; background: transparent; font-size: 26px; transition: background-color 140ms ease, transform 140ms ease; }
+.nezu-message-composer-emoji-grid button { font-size: 21px; }
+.nezu-message-composer-sticker-grid button:hover, .nezu-message-composer-emoji-grid button:hover { background: color-mix(in oklab, var(--nezu-text) 7%, transparent); transform: translateY(-1px); }
+.nezu-message-composer-sticker-body p { margin: 8px 2px 0; color: color-mix(in oklab, var(--nezu-text) 50%, transparent); font-size: 10px; }
+
+.nezu-message-composer-editor { display: flex; min-width: 0; min-height: 36px; max-height: 132px; align-items: center; }
+.nezu-message-composer-editor textarea { width: 100%; min-width: 0; min-height: 36px; max-height: 132px; resize: none; overflow-y: auto; border: 0; padding: 7px 0; outline: 0; color: var(--nezu-text); background: transparent; font: inherit; line-height: 1.5; }
+.nezu-message-composer-editor textarea::placeholder { color: color-mix(in oklab, var(--nezu-text) 52%, transparent); }
+
+.nezu-message-composer-right { margin-left: 4px; }
+.nezu-message-composer-send, .nezu-message-composer-mic { width: 40px; height: 40px; flex-basis: 40px; }
+.nezu-message-composer-send { position: relative; display: grid; place-items: center; border: 0; border-radius: 50%; color: var(--nezu-surface); background: var(--nezu-text); transition: opacity 160ms ease, transform 160ms ease; }
+.nezu-message-composer-send:hover { opacity: .9; }
+.nezu-message-composer-send > span { position: absolute; top: -4px; right: -4px; display: grid; width: 16px; height: 16px; place-items: center; border-radius: 50%; color: #fff; background: #4f46e5; box-shadow: 0 1px 3px rgb(0 0 0 / 28%); font-size: 9px; }
+.nezu-message-composer-mic { background: color-mix(in oklab, var(--nezu-text) 6%, transparent); }
+.nezu-message-composer-mic:hover { color: var(--nezu-text); background: color-mix(in oklab, var(--nezu-text) 10%, transparent); }
+
+.nezu-message-composer-hint { display: flex; min-height: 20px; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 8px 0; color: color-mix(in oklab, var(--nezu-text) 58%, transparent); font-size: 11px; }
+.nezu-message-composer-hint span { display: inline-flex; align-items: center; gap: 4px; }
+.nezu-message-composer-undo { border: 0; border-radius: 999px; padding: 3px 8px; color: var(--nezu-accent); background: color-mix(in oklab, var(--nezu-accent) 8%, transparent); font: inherit; font-weight: 600; }
+.nezu-message-composer-undo:hover { background: color-mix(in oklab, var(--nezu-accent) 14%, transparent); }
+.nezu-message-composer-loader { width: 15px; height: 15px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: nezu-composer-spin 700ms linear infinite; }
+.nezu-message-composer-spin { display: grid; animation: nezu-composer-spin 900ms linear infinite; }
+
+.nezu-message-composer-recording { padding: 8px; }
+.nezu-message-composer-recording-row { display: flex; height: 40px; align-items: center; gap: 12px; padding-left: 4px; }
+.nezu-message-composer-recording-time { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-variant-numeric: tabular-nums; font-weight: 600; }
+.nezu-message-composer-recording-time i { width: 8px; height: 8px; border-radius: 50%; background: #ef4444; animation: nezu-composer-pulse 1s ease-in-out infinite; }
+.nezu-message-composer-wave { display: flex; height: 24px; min-width: 80px; flex: 1; align-items: center; gap: 3px; overflow: hidden; }
+.nezu-message-composer-wave i { width: 3px; flex: 0 0 3px; transform-origin: center; border-radius: 999px; background: color-mix(in oklab, var(--nezu-text) 25%, transparent); transition: transform 300ms ease; }
+.nezu-message-composer-wave i:nth-child(3n + 1) { animation: nezu-composer-wave 760ms ease-in-out infinite alternate; }
+.nezu-message-composer-wave i:nth-child(3n + 2) { animation: nezu-composer-wave 920ms ease-in-out infinite alternate-reverse; }
+.nezu-message-composer-wave i:nth-child(3n) { animation: nezu-composer-wave 840ms ease-in-out infinite alternate; }
+
+@keyframes nezu-composer-pop { from { opacity: 0; transform: translateY(6px) scale(.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes nezu-composer-pulse { 50% { opacity: .35; transform: scale(.82); } }
+@keyframes nezu-composer-spin { to { transform: rotate(360deg); } }
+@keyframes nezu-composer-wave { to { transform: scaleY(.45); opacity: .5; } }
+
+@media (max-width: 560px) {
+  .nezu-message-composer-row { grid-template-columns: minmax(0, 1fr) auto; row-gap: 4px; }
+  .nezu-message-composer-left { grid-column: 1 / -1; }
+  .nezu-message-composer-editor { grid-column: 1; }
+  .nezu-message-composer-right { grid-column: 2; }
+  .nezu-message-composer-menu { width: min(256px, calc(100vw - 48px)); }
+  .nezu-message-composer-sticker-panel { width: min(330px, calc(100vw - 32px)); }
+  .nezu-message-composer-emoji-grid { grid-template-columns: repeat(6, 1fr); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nezu-message-composer-surface,
+  .nezu-message-composer-icon,
+  .nezu-message-composer-mic,
+  .nezu-message-composer-send,
+  .nezu-message-composer-plus,
+  .nezu-message-composer-wave i { transition-duration: 1ms; }
+  .nezu-message-composer-menu,
+  .nezu-message-composer-sticker-panel,
+  .nezu-message-composer-recording-time i,
+  .nezu-message-composer-wave i,
+  .nezu-message-composer-loader,
+  .nezu-message-composer-spin { animation: none; }
+}

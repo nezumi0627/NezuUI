@@ -287,6 +287,15 @@
   width: min(680px, 100%);
 }
 
+.vy-message-input-demo > .nezu-message-composer-root {
+  margin-inline: auto;
+}
+
+.vy-preview-toolbar > span {
+  color: var(--vy-text-dim);
+  font-size: 11px;
+}
+
 .vy-message-input-shell {
   width: min(620px, 100%);
   margin-inline: auto;

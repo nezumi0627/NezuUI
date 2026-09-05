@@ -34,6 +34,22 @@ function Notifications({ enabled, setEnabled }: { enabled: boolean; setEnabled: 
 Use CSS variables to integrate the host theme. The defaults are intentionally
 neutral: `--nezu-accent`, `--nezu-surface`, `--nezu-text`, and `--nezu-border`.
 
+For chat products, `MessageComposer` follows the same boundary: the host owns
+message sending, uploads, AI actions, recording, and product state; the
+component receives values and callbacks. Copy `MessageComposer.tsx`,
+`message-composer.css`, `icons.tsx`, and the tokens it uses.
+
+```tsx
+<MessageComposer
+  value={draft}
+  onValueChange={setDraft}
+  onSend={send}
+  attachments={attachments}
+  onAttachClick={openFilePicker}
+  menuItems={menuItems}
+/>
+```
+
 ## Porting a pattern from Vyline
 
 1. Locate the component and its surrounding behavior in Vyline.
