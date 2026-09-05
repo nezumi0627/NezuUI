@@ -1,208 +1,47 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Avatar, FloatNotice, PremiumBadge, Toggle, VerifiedBadge } from './components'
 import './App.css'
 
-const componentSource = `import { Toggle } from "@nezuui/components";
-
-<Toggle
-  checked={enabled}
-  onCheckedChange={setEnabled}
-  label="通知を受け取る"
-/>`
-
-const tokens = [
-  ['--nezu-accent', 'Primary actions and focus', '#397f65'],
-  ['--nezu-surface', 'Raised surfaces', '#17212b'],
-  ['--nezu-text', 'Readable foreground text', '#eef3f8'],
-  ['--nezu-border', 'Quiet structure', 'rgba(255, 255, 255, .14)'],
+type Section = 'components' | 'motion' | 'icons' | 'tokens' | 'inventory' | 'plan' | 'services'
+const sections: Array<{ id: Section; title: string; subtitle: string; icon: string }> = [
+  { id: 'components', title: 'コンポーネント', subtitle: 'Components', icon: '◫' }, { id: 'motion', title: 'アニメーション', subtitle: 'Motion', icon: '▷' }, { id: 'icons', title: 'アイコン', subtitle: 'Icons', icon: '✦' }, { id: 'tokens', title: 'デザイントークン', subtitle: 'Foundations', icon: '◉' }, { id: 'inventory', title: '全UI・ソース一覧', subtitle: 'Source inventory', icon: '⌘' }, { id: 'plan', title: '共通化の候補', subtitle: 'Extraction notes', icon: '≡' }, { id: 'services', title: '利用サービス', subtitle: 'Services', icon: '↗' },
 ]
-
-const services = [
-  {
-    name: 'Vyline',
-    href: 'https://github.com/nezumi0627/Vyline',
-    mark: 'V',
-    status: 'Vylineで使用中',
-    description: 'LINEクライアント。NezuUIは、Vylineで育てたUIパターンを他のプロジェクトでも使える部品として整理しています。',
-    patterns: ['Toggle', 'Avatar', 'Badges', 'Float notice'],
-  },
-]
+const inventory = [
+  ['基本部品', 'Toggle / Avatar', 'src/components/vy-ui.tsx', '実表示あり'], ['基本部品', '公式・Premium バッジ', 'src/components/official-badge.tsx', '実表示あり'], ['オーバーレイ', '通知・編集・コンテキストメニュー', 'src/components/float-notice.tsx', '実表示あり'], ['オーバーレイ', 'メディアビューアー・グループ作成', 'src/components/media-lightbox.tsx', 'ソースのみ'], ['チャット', 'チャットレイアウト・会話エリア', 'src/pages/chat-shell.tsx', 'ソースのみ'], ['メッセージ', '吹き出し・返信・リアクション', 'src/components/message-bubble.tsx', 'ソースのみ'], ['メッセージ', '入力欄・メンション候補・スタンプ', 'src/components/message-input.tsx', 'ソースのみ'], ['メッセージ', 'Flex・Rich メッセージ', 'src/components/flex-message.tsx', '実表示あり'], ['通話', '通話履歴・通話オーバーレイ', 'src/components/call-event-message.tsx', '実表示あり'], ['設定', '設定行・テーマ・バックアップ', 'src/pages/settings-sections.tsx', 'ソースのみ'], ['画面', 'ホーム・ログイン・サブデバイス認証', 'src/pages/LoginPage.tsx', 'ソースのみ'], ['スタイル', '共通トークンとアニメーション', 'src/index.css', 'ソースのみ'],
+] as const
+const motions = [['fade-up', 'Entry', '160–220ms / ease-out'], ['pop', 'Confirmation', '短い反応にだけ使う'], ['slide', 'Panel', '距離を小さく保つ']] as const
+const tokens = [['--nezu-accent', '#397f65'], ['--nezu-surface', '#17212b'], ['--nezu-text', '#eef3f8'], ['--nezu-border', 'rgba(255, 255, 255, .14)']] as const
+const plans = [['01', 'そのまま再利用できる部品', 'Toggle・Avatar・バッジ・アイコンは、propsだけで表示できる形へ整理済みです。'], ['02', '設定行とカードの共通化', 'ラベル・説明・操作を持つSettingsRowとCardへ切り出せる候補です。'], ['03', 'ダイアログの土台を統一', 'フォーカス、Escape、背景クリックを含む共通の枠組みとして整えます。'], ['04', 'アイコンボタンの状態を揃える', 'ラベル、disabled、hover、focusを同じ基準で提供する候補です。'], ['05', '画面から表示部分を取り出す', 'APIやstoreに依存する画面は、表示用propsとイベントに分離して展示します。'], ['06', 'Motionの定義をまとめる', '名称、速度、動きを減らす設定を共通の基準へ整理します。']] as const
+const componentSource = `import { Toggle } from '@nezuui/components'\n\n<Toggle checked={enabled} onCheckedChange={setEnabled} label="通知を受け取る" />`
 
 function App() {
-  const [enabled, setEnabled] = useState(true)
-  const [notice, setNotice] = useState(false)
-  const [light, setLight] = useState(false)
-
-  useEffect(() => {
-    document.documentElement.dataset.nezuTheme = light ? 'light' : 'dark'
-  }, [light])
-
-  useEffect(() => {
-    if (!notice) return
-    const timer = window.setTimeout(() => setNotice(false), 2400)
-    return () => window.clearTimeout(timer)
-  }, [notice])
-
-  return (
-    <div className="catalog-shell">
-      {notice && <FloatNotice>NezuUI の通知サンプルです</FloatNotice>}
-      <a className="skip-link" href="#catalog">コンテンツへ移動</a>
-
-      <header className="site-header">
-          <a className="brand" href="#top" aria-label="NezuUI トップへ">
-          <span className="brand-mark">nu</span>
-          <span>NezuUI<small>PORTABLE UI</small></span>
-        </a>
-        <nav aria-label="主要セクション">
-          <a href="#services">Services</a>
-          <a href="#components">Components</a>
-          <a href="#motion">Motion</a>
-          <a href="#tokens">Tokens</a>
-          <a href="#adopt">Adopt</a>
-        </nav>
-        <button type="button" className="theme-control" onClick={() => setLight(!light)}>
-          {light ? 'Dark' : 'Light'} <span>テーマ</span>
-        </button>
-      </header>
-
-      <main id="catalog">
-        <section className="hero" id="top">
-          <div>
-            <p className="eyebrow">NEZUUI / 0.1</p>
-            <h1>Small pieces.<br /><em>Better interfaces.</em></h1>
-            <p className="hero-copy">
-              NezuUIは、別のプロジェクトへそのまま持ち込めるReactの小さなUI部品集です。
-              バックエンドやグローバルストアに依存せず、propsとCSS変数だけで動きます。
-            </p>
-            <div className="hero-actions">
-              <a className="primary-link" href="#components">部品を見る <span aria-hidden="true">↓</span></a>
-              <a className="quiet-link" href="https://github.com/nezumi0627/NezuUI">GitHub ↗</a>
-            </div>
-          </div>
-          <div className="hero-art" aria-hidden="true">
-            <span className="hero-ring ring-one" />
-            <span className="hero-ring ring-two" />
-            <span className="hero-card">N<span>e</span>zu<br />UI</span>
-            <span className="hero-dot dot-one" />
-            <span className="hero-dot dot-two" />
-          </div>
-        </section>
-
-        <section className="facts" aria-label="ライブラリの概要">
-          <div><strong>5</strong><span>portable primitives</span></div>
-          <div><strong>{services.length}</strong><span>service using NezuUI</span></div>
-          <div><strong>0</strong><span>runtime dependencies</span></div>
-          <div><strong>MIT</strong><span>ready to reuse</span></div>
-        </section>
-
-        <section className="catalog-section services-section" id="services">
-          <div className="section-heading">
-            <div><p className="eyebrow">01 / SERVICES</p><h2>どこで使われているか。</h2></div>
-            <p>導入状況を公開します。掲載するサービスは、実際にNezuUIのパターンを使っているものだけです。</p>
-          </div>
-          <ul className="service-grid" aria-label="NezuUIを使用しているサービス">
-            {services.map((service) => (
-              <li className="service-card" key={service.name}>
-                <div className="service-card-top">
-                  <span className="service-mark" aria-hidden="true">{service.mark}</span>
-                  <div><h3>{service.name}</h3><a href={service.href}>プロジェクトを見る ↗</a></div>
-                  <span className="service-status">{service.status}</span>
-                </div>
-                <p>{service.description}</p>
-                <div className="service-patterns" aria-label={`${service.name}で使用中のパターン`}>
-                  {service.patterns.map((pattern) => <span key={pattern}>{pattern}</span>)}
-                </div>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        <section className="catalog-section" id="components">
-          <div className="section-heading">
-            <div><p className="eyebrow">02 / COMPONENTS</p><h2>触って確かめる。</h2></div>
-            <p>すべて同じ小さな境界で使えます。ネットワーク・ストア・プロダクト固有データは持ちません。</p>
-          </div>
-          <div className="component-grid">
-            <article className="specimen wide">
-              <header><h3>Toggle</h3><code>controlled</code></header>
-              <div className="specimen-stage toggle-stage">
-                <div><span>通知を受け取る</span><small>{enabled ? '有効' : '無効'} — 親のstateで制御</small></div>
-                <Toggle checked={enabled} onCheckedChange={setEnabled} label="通知を受け取る" />
-              </div>
-              <footer><span>native button / role=switch / reduced motion</span><code>Toggle.tsx</code></footer>
-            </article>
-
-            <article className="specimen">
-              <header><h3>Avatar</h3><code>presentational</code></header>
-              <div className="specimen-stage avatar-stage">
-                <Avatar glyph="N" color="#43886d" size={38} />
-                <Avatar glyph="ゆ" color="#577fb7" size={52} online />
-                <Avatar glyph="ね" color="#7864ad" size={66} ring />
-              </div>
-              <footer><span>glyph / image / online / ring</span><code>Avatar.tsx</code></footer>
-            </article>
-
-            <article className="specimen">
-              <header><h3>Badges</h3><code>status</code></header>
-              <div className="specimen-stage badges-stage">
-                <div className="identity-line"><Avatar glyph="N" color="#43886d" size={38} /><span>NezuUI</span><VerifiedBadge /></div>
-                <div className="identity-line"><PremiumBadge size={22} /><span>Premium</span><PremiumBadge compact size={16} /></div>
-              </div>
-              <footer><span>verified / premium</span><code>Badges.tsx</code></footer>
-            </article>
-
-            <article className="specimen">
-              <header><h3>Float notice</h3><code>status</code></header>
-              <div className="specimen-stage notice-stage">
-                <button type="button" className="demo-button" onClick={() => setNotice(true)}>通知を表示</button>
-                <small>クリックで2.4秒間表示</small>
-              </div>
-              <footer><span>role=status / no global store</span><code>FloatNotice.tsx</code></footer>
-            </article>
-          </div>
-        </section>
-
-        <section className="catalog-section motion-section" id="motion">
-          <div className="section-heading">
-            <div><p className="eyebrow">03 / MOTION</p><h2>短く、目的を持って。</h2></div>
-            <p>頻繁に見る操作は静かに。動きを減らすOS設定では、全モーションをほぼ瞬時に終えます。</p>
-          </div>
-          <div className="motion-grid">
-            <article><span className="motion-sample nezu-fade-up">Fade up</span><h3>Entry</h3><p>160–220ms / ease-out</p></article>
-            <article><span className="motion-sample nezu-pop">Pop</span><h3>Confirmation</h3><p>短い反応にだけ使う</p></article>
-            <article><span className="motion-sample nezu-slide">Slide</span><h3>Panel</h3><p>距離を小さく保つ</p></article>
-          </div>
-        </section>
-
-        <section className="catalog-section" id="tokens">
-          <div className="section-heading">
-            <div><p className="eyebrow">04 / TOKENS</p><h2>プロジェクトの色で使う。</h2></div>
-            <p>部品に色を閉じ込めず、ホストアプリからCSS変数を上書きします。</p>
-          </div>
-          <div className="token-grid">
-            {tokens.map(([name, description, value]) => (
-              <article key={name}>
-                <span className="token-swatch" style={{ background: `var(${name})` }} />
-                <div><code>{name}</code><p>{description}</p></div>
-                <small>{value}</small>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="adopt-section" id="adopt">
-          <div><p className="eyebrow">05 / ADOPT</p><h2>使うものだけ、持っていく。</h2><p>各部品はnamed exportと単一のスタイルシートで提供します。プロダクトのデータ取得・永続化・ルーティングは導入先に残します。</p><a className="quiet-link" href="https://github.com/nezumi0627/NezuUI/blob/main/docs/adoption.md">導入ガイドを読む ↗</a></div>
-          <pre aria-label="Toggleの使用例"><code>{componentSource}</code></pre>
-        </section>
-      </main>
-
-      <footer className="site-footer">
-        <span><strong>nu</strong> NezuUI</span>
-        <span>Built from reusable ideas, including research from <a href="https://github.com/nezumi0627/Vyline">Vyline</a>.</span>
-        <a href="https://github.com/nezumi0627/NezuUI">GitHub ↗</a>
-      </footer>
-    </div>
-  )
+  const [section, setSection] = useState<Section>('components'); const [enabled, setEnabled] = useState(true); const [notice, setNotice] = useState(false); const [light, setLight] = useState(false); const [query, setQuery] = useState(''); const [category, setCategory] = useState('すべて'); const [copied, setCopied] = useState(false)
+  const current = sections.find((item) => item.id === section)!
+  useEffect(() => { document.documentElement.dataset.nezuTheme = light ? 'light' : 'dark' }, [light])
+  useEffect(() => { if (!notice) return; const timer = window.setTimeout(() => setNotice(false), 2400); return () => window.clearTimeout(timer) }, [notice])
+  const files = useMemo(() => inventory.filter(([fileCategory, title, path]) => (category === 'すべて' || category === fileCategory) && `${title} ${path}`.toLowerCase().includes(query.toLowerCase())), [category, query])
+  const navigate = (id: Section) => { setSection(id); setQuery(''); setCategory('すべて'); window.scrollTo({ top: 0, behavior: 'smooth' }) }
+  const copy = async () => { await navigator.clipboard?.writeText(componentSource); setCopied(true); window.setTimeout(() => setCopied(false), 1800) }
+  const description = section === 'components' ? 'Vylineの小さな部品を、ひとつずつ。見て、触れて、次の共通UIへ。' : section === 'inventory' ? 'Vylineで調査したコンポーネント・画面・スタイルを、公開可能な棚卸しとして確認できます。' : section === 'plan' ? '現状の重複と依存関係から、NezuUIへ切り出す順序を整理します。' : section === 'services' ? 'NezuUIを使うサービスと、導入中のUIパターンを公開します。' : '既存の定義を観察し、移植可能なインターフェースの基礎を整えます。'
+  return <div className="nu-app">
+    {notice && <FloatNotice>NezuUI のサンプル通知です</FloatNotice>}<a className="nu-skip" href="#catalog-content">コンテンツへ移動</a>
+    <aside className="nu-sidebar"><a className="nu-brand" href="#top"><span className="nu-mark">n<span>u</span></span><span>NezuUI<small>INTERFACE COLLECTION</small></span></a><div className="nu-project"><span className="nu-dot" />Vyline <span className="nu-tag nu-tag-live">使用中</span></div><p className="nu-nav-label">LIBRARY</p><nav aria-label="NezuUIカタログ">{sections.map((item) => <button type="button" key={item.id} aria-current={section === item.id ? 'page' : undefined} onClick={() => navigate(item.id)}><span aria-hidden="true">{item.icon}</span><span>{item.title}</span>{item.id === 'inventory' && <small>36</small>}</button>)}</nav><div className="nu-sidebar-bottom"><div className="nu-line-art" aria-hidden="true"><span /><span /><span /></div><p>From Vyline,<br />for the next interface.</p><small>既存UIを観察し、整理する場所。</small><span className="nu-status"><span className="nu-dot" />公開カタログ</span></div></aside>
+    <div className="nu-main"><header className="nu-topbar"><div>Library <span>/</span> <strong>{current.subtitle}</strong></div><button type="button" className="nu-theme-button" onClick={() => setLight(!light)}>◐ {light ? 'Light' : 'Dark'} <span>テーマ切替</span></button></header><main id="catalog-content" tabIndex={-1}>
+      <div className="nu-heading" id="top"><div><p className="nu-eyebrow">NEZUUI / {current.subtitle.toUpperCase()}</p><h1>{current.title}<span>.</span></h1><p className="nu-description">{description}</p></div><span className="nu-edition">01<span>COLLECTION</span></span></div><div className="nu-summary"><span><strong>36</strong>UIファイル</span><span><strong>11</strong>実表示対応</span><span><strong>3</strong>Motion定義</span><span><strong>1</strong>利用サービス</span></div>
+      {section === 'components' && <Components enabled={enabled} setEnabled={setEnabled} setNotice={setNotice} copied={copied} copy={copy} />}
+      {section === 'motion' && <><div className="nu-tools"><button type="button" className="nu-button" onClick={() => setNotice(true)}>▷ すべて再生</button><small>OSの「動きを減らす」設定を優先します。</small></div><div className="nu-grid">{motions.map(([name, title, detail]) => <article className="nu-specimen" key={name}><SpecimenHead title={name} /><div className="nu-stage"><span className={`nu-motion-sample nu-${name}`}>◫ <span>Hello, NezuUI.</span></span></div><SpecimenFoot detail={`${title} · ${detail}`} /></article>)}</div></>}
+      {section === 'icons' && <><Search label="アイコンを検索" query={query} setQuery={setQuery} placeholder="名前で検索…" /><div className="nu-icon-grid">{['Add', 'ArrowLeft', 'Bell', 'Chat', 'Chevron', 'Close', 'CopyCode', 'Download', 'Edit', 'Memo', 'More', 'Palette', 'Play', 'Reply', 'Search', 'Spark', 'Trash'].filter((name) => name.toLowerCase().includes(query.toLowerCase())).map((name) => <div className="nu-icon-cell" key={name}><span>✦</span><code>{name}</code></div>)}</div></>}
+      {section === 'tokens' && <><p className="nu-note">色は導入先でCSS変数として上書きします。色を部品へ閉じ込めません。</p><div className="nu-token-grid">{tokens.map(([name, value]) => <div className="nu-token" key={name}><span style={{ background: `var(${name})` }} /><code>{name}</code><small>{value}</small></div>)}</div></>}
+      {section === 'inventory' && <><Search label="UI一覧を検索" query={query} setQuery={setQuery} placeholder="名前・ファイルパスで検索…" /><div className="nu-filters">{['すべて', ...new Set(inventory.map(([fileCategory]) => fileCategory))].map((item) => <button type="button" key={item} aria-pressed={category === item} onClick={() => setCategory(item)}>{item}</button>)}</div><p className="nu-results" role="status">{files.length} ファイル · Vyline由来のUI調査</p><div className="nu-inventory">{files.map(([fileCategory, title, path, status]) => <a className="nu-inventory-row" key={path} href={`https://github.com/nezumi0627/Vyline/blob/main/Vyline/apps/desktop/${path}`}><span className="nu-file-icon">⌘</span><span className="nu-inventory-name"><strong>{title}</strong><code>{path}</code><small>Vyline UI inventory</small></span><span className="nu-category">{fileCategory}</span><span className={`nu-tag ${status === '実表示あり' ? 'nu-tag-live' : ''}`}>{status}</span><span aria-hidden="true">›</span></a>)}</div></>}
+      {section === 'plan' && <div className="nu-plan">{plans.map(([number, title, planDescription]) => <article key={number}><span>{number}</span><div><h2>{title}</h2><p>{planDescription}</p><button type="button" onClick={() => navigate('inventory')}>対象コードを見る ↗</button></div><span className="nu-tag">候補</span></article>)}<p className="nu-note">このページは棚卸し段階です。既存アプリの大規模な共通化は、部品ごとに検証してから進めます。</p></div>}
+      {section === 'services' && <div className="nu-service-card"><div className="nu-service-head"><span className="nu-service-mark">V</span><div><h2>Vyline</h2><a href="https://github.com/nezumi0627/Vyline">プロジェクトを見る ↗</a></div><span className="nu-status-tag">Vylineで使用中</span></div><p>NezuUIの原点となるUIパターンを使うLINEクライアントです。ここで整理した部品は、他のプロジェクトにも移植できます。</p><div className="nu-patterns"><span>Toggle</span><span>Avatar</span><span>Badges</span><span>Float notice</span></div></div>}
+      <footer className="nu-footer"><span>NezuUI <span>—</span> Built from Vyline</span><a href="https://github.com/nezumi0627/NezuUI">GitHub ↗</a></footer>
+    </main></div>
+  </div>
 }
 
+function Components({ enabled, setEnabled, setNotice, copied, copy }: { enabled: boolean; setEnabled: (value: boolean) => void; setNotice: (value: boolean) => void; copied: boolean; copy: () => Promise<void> }) { return <><div className="nu-section-heading"><h2>触って確かめる</h2><span>LIVE PREVIEWS <i className="nu-dot" /></span></div><div className="nu-grid"><article className="nu-specimen"><SpecimenHead title="Toggle" /><div className="nu-stage"><div className="nu-demo-stack"><div className="nu-demo-row"><span>通知を受け取る</span><Toggle checked={enabled} onCheckedChange={setEnabled} label="通知を受け取る" /></div><div className="nu-demo-row"><span>無効なスイッチ</span><Toggle checked={false} disabled onCheckedChange={() => {}} label="無効なスイッチ" /></div><small>{enabled ? 'ON — 有効' : 'OFF — 無効'}</small></div></div><SpecimenFoot detail="ON / OFF / disabled · reduced motion" /></article><article className="nu-specimen"><SpecimenHead title="Avatar" /><div className="nu-stage"><div className="nu-avatar-row">{[32, 44, 56, 72].map((size, index) => <div key={size}><Avatar glyph={['N', 'ゆ', 'あ', 'ね'][index]} color={['#4a8578', '#6088af', '#a47d56', '#6861a3'][index]} size={size} online={index === 2} ring={index === 3} /><small>{size}px</small></div>)}</div></div><SpecimenFoot detail="サイズ / オンライン / リング / 画像" /></article><article className="nu-specimen"><SpecimenHead title="Official & Premium badges" /><div className="nu-stage"><div className="nu-demo-stack"><div className="nu-demo-row"><Avatar glyph="N" color="#39866a" size={34} /><span>NezuUI Official</span><VerifiedBadge /></div><div className="nu-demo-row"><PremiumBadge /><PremiumBadge size={24} /><PremiumBadge compact size={18} /><span>Premium</span></div></div></div><SpecimenFoot detail="公式アカウント / サイズ違い / compact" /></article><article className="nu-specimen"><SpecimenHead title="Float notice" /><div className="nu-stage"><button type="button" className="nu-button" onClick={() => setNotice(true)}>● 通知を表示</button></div><SpecimenFoot detail="クリックで上部に表示 · 2.4秒で閉じる" /></article><article className="nu-specimen"><SpecimenHead title="Portable import" /><div className="nu-stage"><pre className="nu-code"><code>{componentSource}</code></pre></div><div className="nu-specimen-foot"><button type="button" onClick={() => void copy()}>{copied ? 'コピーしました' : 'コードをコピー'} ↗</button></div></article><article className="nu-specimen"><SpecimenHead title="Vyline research boundary" /><div className="nu-stage"><div className="nu-demo-stack"><strong>実行コードは持ち込まない</strong><small>LINE通信、ストア、認証はVylineに残します。NezuUIは表示と操作フィードバックだけを公開します。</small></div></div><SpecimenFoot detail="portable / no runtime dependency" /></article></div><p className="nu-note">このページはVyline由来のUIを共通化するための公開カタログです。データ取得やLINE操作は実行しません。</p></> }
+function SpecimenHead({ title }: { title: string }) { return <div className="nu-specimen-head"><h3>{title}</h3><span className="nu-tag">実コンポーネント</span></div> }
+function SpecimenFoot({ detail }: { detail: string }) { return <div className="nu-specimen-foot"><p>{detail}</p><a href="#inventory">ソース一覧を見る ↗</a></div> }
+function Search({ label, query, setQuery, placeholder }: { label: string; query: string; setQuery: (value: string) => void; placeholder: string }) { return <div className="nu-search"><span>⌕</span><input aria-label={label} placeholder={placeholder} value={query} onChange={(event) => setQuery(event.target.value)} /></div> }
 export default App
