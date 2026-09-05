@@ -1,0 +1,19 @@
+.nu-skill-page { display: grid; gap: 18px; }
+.nu-skill-card { overflow: hidden; border: 1px solid var(--nezu-border); border-radius: 18px; background: color-mix(in oklab, var(--nezu-surface) 94%, transparent); }
+.nu-skill-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; padding: 22px 22px 16px; }
+.nu-skill-head h2 { margin: 5px 0 8px; font-size: clamp(20px, 2.8vw, 30px); }
+.nu-skill-head p { max-width: 720px; margin: 0; color: color-mix(in oklab, var(--nezu-text) 62%, transparent); line-height: 1.7; }
+.nu-skill-actions { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 22px 16px; }
+.nu-skill-code { max-height: 430px; margin: 0; overflow: auto; border-top: 1px solid var(--nezu-border); padding: 20px 22px; color: var(--nezu-text); background: color-mix(in oklab, var(--nezu-surface) 86%, #000); font-size: 12px; line-height: 1.75; white-space: pre-wrap; overflow-wrap: anywhere; }
+.nu-skill-notes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.nu-skill-notes article { display: grid; gap: 5px; border: 1px solid var(--nezu-border); border-radius: 14px; padding: 15px; background: color-mix(in oklab, var(--nezu-surface) 95%, transparent); }
+.nu-skill-notes strong { font-size: 13px; }
+.nu-skill-notes span { color: color-mix(in oklab, var(--nezu-text) 58%, transparent); font-size: 12px; line-height: 1.6; }
+
+@media (max-width: 720px) {
+  .nu-skill-head { flex-direction: column; padding: 17px 16px 12px; }
+  .nu-skill-actions { padding: 0 16px 14px; }
+  .nu-skill-actions .nu-button { flex: 1 1 180px; justify-content: center; }
+  .nu-skill-code { padding: 16px; font-size: 11px; }
+  .nu-skill-notes { grid-template-columns: 1fr; }
+}
