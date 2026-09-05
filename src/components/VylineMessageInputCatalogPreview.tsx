@@ -11,7 +11,7 @@ import {
 import './message-composer.css'
 import './vyline-message-input-catalog.css'
 
-type Tool = 'none' | 'plus' | 'attach' | 'sticker' | 'mute' | 'ai'
+type Tool = 'none' | 'plus' | 'attach' | 'sticker' | 'ai'
 type StickerTab = 'sticker' | 'emoji'
 
 const stickers = [
@@ -47,6 +47,7 @@ export function VylineMessageInputCatalogPreview() {
   const [reply, setReply] = useState(true)
   const [agentEnabled, setAgentEnabled] = useState(true)
   const [groupChat, setGroupChat] = useState(true)
+  const [muted, setMuted] = useState(false)
   const [tool, setTool] = useState<Tool>('none')
   const [stickerTab, setStickerTab] = useState<StickerTab>('sticker')
   const [feedback, setFeedback] = useState('')
@@ -58,7 +59,7 @@ export function VylineMessageInputCatalogPreview() {
 
   const send = () => {
     if (!draft.trim()) return
-    setFeedback(tool === 'mute' ? 'ミュート送信のデモ' : '送信のデモ')
+    setFeedback(muted ? 'ミュート送信のデモ' : '送信のデモ')
   }
 
   return (
@@ -80,7 +81,7 @@ export function VylineMessageInputCatalogPreview() {
                 <DemoToolButton label="作成メニュー" active={tool === 'plus'} onClick={() => toggleTool('plus')}><span className={`nezu-message-composer-plus ${tool === 'plus' ? 'is-open' : ''}`}><IconPlus size={20} /></span></DemoToolButton>
                 <DemoToolButton label="画像・動画を添付" active={tool === 'attach'} onClick={() => { toggleTool('attach'); setFeedback('添付ボタンのデモ') }}><IconPaperclip size={18} /></DemoToolButton>
                 <DemoToolButton label="スタンプ・LINE絵文字" active={tool === 'sticker'} onClick={() => toggleTool('sticker')}><IconSmile size={18} /></DemoToolButton>
-                <DemoToolButton label="ミュートメッセージ" active={tool === 'mute'} onClick={() => toggleTool('mute')}><IconBellOff size={18} /></DemoToolButton>
+                <DemoToolButton label="ミュートメッセージ" active={muted} onClick={() => { setMuted((value) => !value); setFeedback('') }}><IconBellOff size={18} /></DemoToolButton>
               </div>
 
               <label className="nezu-message-composer-editor"><span className="sr-only">メッセージ</span><textarea rows={1} value={draft} placeholder="メッセージを入力" onChange={(event) => { setDraft(event.target.value); setFeedback('') }} /></label>
@@ -91,7 +92,7 @@ export function VylineMessageInputCatalogPreview() {
               </div>
             </div>
           </div>
-          <div className="nezu-message-composer-hint" aria-live="polite"><span>{feedback || 'ボタンはカタログ用デモです。押すと状態色が変わります。'}</span></div>
+          <div className="nezu-message-composer-hint" aria-live="polite"><span>{feedback || (muted ? 'ミュートメッセージ：相手に通知されません' : 'ボタンはカタログ用デモです。押すと状態色が変わります。')}</span></div>
         </div>
       </div>
 
