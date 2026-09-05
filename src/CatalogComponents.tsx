@@ -13,11 +13,11 @@ import {
   VylineMediaLightboxPreview,
   VylineMentionPickerPreview,
   VylineMessageBubblePreview,
-  VylineMessageInputPreview,
   VylineRecordingPreview,
   VylineRichMessagePreview,
   VylineSourceOnlyPreview,
 } from './components'
+import { VylineMessageInputCatalogPreview } from './components/VylineMessageInputCatalogPreview'
 import { IconMemo } from './components/icons'
 import type { UiInventoryItem } from './data/vyline-ui'
 
@@ -78,7 +78,7 @@ export function VylineComponentsCatalog({
       <Card title="ChatRow" detail="sidebar.tsx · official / pin / mute / time / unread / online"><VylineChatRowPreview /></Card>
       <Card title="AccountSwitcher" detail="sidebar.tsx · avatar / premium / account id / chevron"><VylineAccountSwitcherPreview /></Card>
       <Card title="MessageBubble" detail="message-bubble.tsx · separate meta / read / reply / reactions"><VylineMessageBubblePreview /></Card>
-      <Card title="MessageInput / MessageComposer" detail="message-input.tsx · plus / attachment / sticker / mute / AI / reply / voice / send"><VylineMessageInputPreview /></Card>
+      <Card title="MessageInput / MessageComposer" detail="message-input.tsx · plus / attachment / sticker / mute / AI / reply / voice / send"><VylineMessageInputCatalogPreview /></Card>
       <Card title="Mention picker" detail="message-input.tsx · @All / member candidate"><VylineMentionPickerPreview /></Card>
       <Card title="Recording state" detail="message-input.tsx · recording card / waveform / cancel / send"><VylineRecordingPreview /></Card>
       <Card title="MessageContextMenu" detail="message-context-menu.tsx · children submenu / 戻る / danger"><VylineContextMenuPreview /></Card>
@@ -106,10 +106,10 @@ export function VylineInventoryPreview({ item }: { item: UiInventoryItem }) {
     case 'MessageBubble':
     case 'ReplyQuote':
     case 'ReactionBadges': return <VylineMessageBubblePreview />
-    case 'MessageInput': return <VylineMessageInputPreview />
+    case 'MessageInput': return <VylineMessageInputCatalogPreview />
     case 'Mention picker': return <VylineMentionPickerPreview />
-    case 'Reply preview': return <VylineMessageInputPreview />
-    case 'PlusMenu': return <VylineMessageInputPreview />
+    case 'Reply preview': return <VylineMessageInputCatalogPreview />
+    case 'PlusMenu': return <VylineMessageInputCatalogPreview />
     case 'Recording state': return <VylineRecordingPreview />
     case 'MessageContextMenu': return <VylineContextMenuPreview />
     case 'EditMessageDialog': return <VylineEditMessageDialogPreview />

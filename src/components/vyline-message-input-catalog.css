@@ -1,0 +1,42 @@
+.vy-catalog-message-input { width: 100%; max-width: 100%; }
+.vy-catalog-message-input .vy-preview-toolbar { margin-bottom: 10px; }
+.vy-catalog-composer-frame { display: grid; place-items: center; width: 100%; }
+.vy-catalog-composer { width: min(520px, 100%); }
+.vy-catalog-composer .nezu-message-composer-row { grid-template-columns: auto minmax(110px, 1fr) auto; }
+.vy-catalog-composer .nezu-message-composer-editor textarea { min-width: 0; white-space: pre-wrap; overflow-wrap: break-word; }
+.vy-catalog-composer .nezu-message-composer-hint { min-height: 26px; padding-inline: 4px; }
+
+.vy-catalog-detached-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(220px, .9fr); gap: 12px; width: min(720px, 100%); margin: 12px auto 0; }
+.vy-catalog-panel-card { min-width: 0; overflow: hidden; border: 1px solid var(--nezu-border); border-radius: 16px; background: color-mix(in oklab, var(--nezu-surface) 92%, transparent); transition: border-color 160ms ease, box-shadow 160ms ease; }
+.vy-catalog-panel-card.is-active { border-color: color-mix(in oklab, var(--nezu-accent) 68%, var(--nezu-border)); box-shadow: 0 0 0 2px color-mix(in oklab, var(--nezu-accent) 12%, transparent); }
+.vy-catalog-panel-label { display: grid; gap: 2px; border-bottom: 1px solid var(--nezu-border); padding: 10px 12px; }
+.vy-catalog-panel-label strong { font-size: 12px; }
+.vy-catalog-panel-label span { color: color-mix(in oklab, var(--nezu-text) 52%, transparent); font-size: 10px; }
+.vy-catalog-detached-panel.nezu-message-composer-sticker-panel,
+.vy-catalog-detached-panel.nezu-message-composer-menu { position: static; z-index: auto; bottom: auto; left: auto; width: 100%; border: 0; border-radius: 0; box-shadow: none; animation: none; }
+.vy-catalog-detached-panel.nezu-message-composer-menu { padding: 6px; }
+
+@media (max-width: 760px) {
+  .vy-catalog-detached-grid { grid-template-columns: 1fr; }
+  .vy-catalog-composer { width: min(480px, 100%); }
+}
+
+@media (max-width: 560px) {
+  .vy-catalog-message-input .vy-preview-toolbar { gap: 5px; }
+  .vy-catalog-message-input .vy-preview-toolbar button { flex: 1 1 calc(50% - 5px); min-width: 0; }
+  .vy-catalog-composer { width: 100%; }
+  .vy-catalog-composer .nezu-message-composer-row { grid-template-columns: minmax(0, 1fr) auto; }
+  .vy-catalog-composer .nezu-message-composer-left { grid-column: 1 / -1; justify-content: flex-start; }
+  .vy-catalog-composer .nezu-message-composer-editor { grid-column: 1; }
+  .vy-catalog-composer .nezu-message-composer-right { grid-column: 2; }
+  .vy-catalog-composer .nezu-message-composer-icon { width: 34px; height: 34px; flex-basis: 34px; }
+  .vy-catalog-composer .nezu-message-composer-reply > div { padding-inline: 10px; }
+  .vy-catalog-detached-grid { margin-top: 10px; }
+}
+
+@media (max-width: 390px) {
+  .vy-catalog-composer .nezu-message-composer-left { gap: 0; }
+  .vy-catalog-composer .nezu-message-composer-icon { width: 32px; height: 32px; flex-basis: 32px; }
+  .vy-catalog-panel-label { padding: 9px 10px; }
+  .vy-catalog-detached-panel .nezu-message-composer-sticker-body { padding: 8px; }
+}
