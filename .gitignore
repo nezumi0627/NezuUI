@@ -12,6 +12,16 @@ dist
 dist-ssr
 *.local
 
+# Local verification / source extraction artifacts
+.chrome-verify/
+.zip-source-*/
+responsive-*.png
+verify-*.png
+desktop.png
+laptop.png
+mobile.png
+tablet.png
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

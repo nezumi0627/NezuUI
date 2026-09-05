@@ -1,6 +1,7 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Avatar } from './Avatar'
 import { OfficialBadge, PremiumBadge } from './Badges'
+import { MessageComposer } from './MessageComposer'
 import {
   IconAtSign,
   IconBellOff,
@@ -15,14 +16,10 @@ import {
   IconMemo,
   IconMic,
   IconMicOff,
-  IconPaperclip,
   IconPhone,
   IconPin,
   IconPlus,
   IconReply,
-  IconSend,
-  IconSmile,
-  IconSpark,
   IconTrash,
   IconVideo,
 } from './icons'
@@ -30,30 +27,6 @@ import './vyline-previews.css'
 
 const richImage =
   'data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 600 400%22%3E%3Cdefs%3E%3ClinearGradient id=%22g%22 x1=%220%22 x2=%221%22 y1=%220%22 y2=%221%22%3E%3Cstop stop-color=%22%232aabee%22/%3E%3Cstop offset=%221%22 stop-color=%22%2352769f%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%22600%22 height=%22400%22 rx=%2230%22 fill=%22url(%23g)%22/%3E%3Ccircle cx=%22130%22 cy=%22135%22 r=%2260%22 fill=%22white%22 fill-opacity=%22.18%22/%3E%3Ctext x=%2250%22 y=%22265%22 font-size=%2262%22 font-family=%22sans-serif%22 fill=%22white%22 font-weight=%22700%22%3ENezuUI%3C/text%3E%3Ctext x=%2252%22 y=%22315%22 font-size=%2227%22 font-family=%22sans-serif%22 fill=%22white%22 fill-opacity=%22.82%22%3EVyline Rich Message%3C/text%3E%3C/svg%3E'
-
-function PreviewIconButton({
-  label,
-  active,
-  children,
-  onClick,
-}: {
-  label: string
-  active?: boolean
-  children: React.ReactNode
-  onClick?: () => void
-}) {
-  return (
-    <button
-      type="button"
-      className={`vy-icon-button ${active ? 'active' : ''}`}
-      aria-label={label}
-      aria-pressed={active}
-      onClick={onClick}
-    >
-      {children}
-    </button>
-  )
-}
 
 export function VylineChatRowPreview() {
   return (
@@ -112,53 +85,42 @@ export function VylineMessageInputPreview() {
   const [reply, setReply] = useState(true)
   const [agentEnabled, setAgentEnabled] = useState(true)
   const [mute, setMute] = useState(false)
-  const [picker, setPicker] = useState(false)
+  const [groupChat, setGroupChat] = useState(true)
+  const [feedback, setFeedback] = useState('')
 
   return (
     <div className="nu-vyline-preview vy-message-input-demo">
       <div className="vy-preview-toolbar" aria-label="プレビュー状態">
         <button type="button" aria-pressed={reply} onClick={() => setReply((v) => !v)}>返信</button>
         <button type="button" aria-pressed={agentEnabled} onClick={() => setAgentEnabled((v) => !v)}>Agent I</button>
+        <button type="button" aria-pressed={groupChat} onClick={() => setGroupChat((v) => !v)}>{groupChat ? 'グループ' : '1:1'}</button>
         <button type="button" onClick={() => setDraft('')}>空入力</button>
+        {feedback && <span role="status">{feedback}</span>}
       </div>
-      <div className="vy-message-input-shell">
-        {reply && (
-          <div className="vy-reply-preview">
-            <button type="button" className="vy-reply-preview-body">
-              <strong>ねずみさん への返信</strong>
-              <span>細かいUIまで全部まとめたい</span>
-            </button>
-            <button type="button" className="vy-reply-close" aria-label="返信をキャンセル" onClick={() => setReply(false)}>
-              <IconClose size={16} />
-            </button>
-          </div>
-        )}
-        <div className="vy-input-row">
-          <PreviewIconButton label="追加メニュー"><IconPlus size={20} /></PreviewIconButton>
-          <PreviewIconButton label="写真を添付"><IconPaperclip size={20} /></PreviewIconButton>
-          <PreviewIconButton label="スタンプ・絵文字" active={picker} onClick={() => setPicker((v) => !v)}><IconSmile size={20} /></PreviewIconButton>
-          <PreviewIconButton label="ミュートメッセージ" active={mute} onClick={() => setMute((v) => !v)}><IconBellOff size={19} /></PreviewIconButton>
-          {agentEnabled && draft.trim() && <PreviewIconButton label="AIで文章を整える"><IconSpark size={19} /></PreviewIconButton>}
-          <div className="vy-textarea-wrap">
-            <textarea
-              rows={1}
-              value={draft}
-              aria-label="メッセージを入力"
-              placeholder={mute ? 'メッセージを入力（ミュート送信: 通知なし）' : 'メッセージを入力'}
-              onChange={(e) => setDraft(e.target.value)}
-            />
-          </div>
-          {draft.trim() ? (
-            <button type="button" className={`vy-send-button ${mute ? 'muted-send' : ''}`} aria-label={mute ? 'ミュート送信（通知なし）' : '送信'}>
-              <IconSend size={18} />
-              {mute && <span className="vy-muted-send-mark">✕</span>}
-            </button>
-          ) : (
-            <PreviewIconButton label="音声メッセージを録音"><IconMic size={20} /></PreviewIconButton>
-          )}
-        </div>
-        {mute && <div className="vy-input-status"><IconBellOff size={12} />ミュート送信中（相手にプッシュ通知されません）</div>}
-      </div>
+      <MessageComposer
+        value={draft}
+        onValueChange={(value) => { setDraft(value); setFeedback('') }}
+        onSend={(payload) => {
+          setDraft('')
+          setFeedback(payload.muted ? 'ミュート送信しました' : '送信しました')
+        }}
+        onSendSticker={(glyph, mutedMessage) => setFeedback(`${glyph} を${mutedMessage ? 'ミュートで' : ''}送信しました`)}
+        onCreate={(id) => setFeedback(`${id} を選択しました`)}
+        isGroupChat={groupChat}
+        mute={mute}
+        onMuteChange={setMute}
+        aiEnabled={agentEnabled}
+        reply={reply ? { author: 'ねずみさん', text: '細かいUIまで全部まとめたい' } : undefined}
+        onDismissReply={() => setReply(false)}
+        menuItems={[
+          { id: 'event', label: 'イベント作成', description: '日程と場所を決めて共有', onSelect: () => setFeedback('イベント作成を選択しました') },
+          { id: 'amidakuji', label: 'あみだくじ', description: 'メンバーでくじ引き', groupOnly: true, onSelect: () => setFeedback('あみだくじを選択しました') },
+          { id: 'poll', label: 'アンケート', description: '選択肢を作って投票', onSelect: () => setFeedback('アンケートを選択しました') },
+        ]}
+        onRecord={() => setFeedback('')}
+        onCancelRecording={() => setFeedback('録音をキャンセルしました')}
+        onSendRecording={(seconds) => setFeedback(`音声メッセージ ${seconds}秒 を送信しました`)}
+      />
     </div>
   )
 }
@@ -192,19 +154,28 @@ export function VylineMentionPickerPreview() {
 }
 
 export function VylineRecordingPreview() {
-  const seconds = 12
+  const [recording, setRecording] = useState(true)
+  const [seconds, setSeconds] = useState(12)
+  const [status, setStatus] = useState('')
+
+  useEffect(() => {
+    if (!recording) return
+    const timer = window.setInterval(() => setSeconds((value) => value + 1), 1000)
+    return () => window.clearInterval(timer)
+  }, [recording])
+
   return (
-    <div className="nu-vyline-preview vy-recording-preview">
-      <span className="vy-record-dot" />
-      <span className="vy-record-label">録音中</span>
-      <span className="vy-record-time">0:{seconds.toString().padStart(2, '0')}</span>
-      <div className="vy-wave" aria-hidden="true">
-        {Array.from({ length: 28 }, (_, i) => (
-          <i key={i} style={{ height: 6 + Math.abs(Math.sin(i * 0.9 + seconds)) * 18 }} />
-        ))}
-      </div>
-      <PreviewIconButton label="録音をキャンセル"><IconClose size={20} /></PreviewIconButton>
-      <button type="button" className="vy-record-send" aria-label="音声を送信"><IconSend size={19} /></button>
+    <div className="nu-vyline-preview vy-message-input-demo">
+      {!recording && <div className="vy-preview-toolbar"><button type="button" onClick={() => { setSeconds(0); setStatus(''); setRecording(true) }}>もう一度録音</button>{status && <span role="status">{status}</span>}</div>}
+      <MessageComposer
+        value=""
+        onValueChange={() => {}}
+        onSend={() => {}}
+        recording={recording}
+        recordingSeconds={seconds}
+        onCancelRecording={() => { setRecording(false); setStatus('録音をキャンセルしました') }}
+        onSendRecording={() => { setRecording(false); setStatus('音声メッセージを送信しました') }}
+      />
     </div>
   )
 }
