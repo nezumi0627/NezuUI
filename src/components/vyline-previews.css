@@ -19,6 +19,8 @@
   --nezu-accent: var(--vy-accent);
   --nezu-surface: var(--vy-surface);
   box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
   color: var(--vy-text);
   font-family: "IBM Plex Sans JP", "IBM Plex Sans", "Segoe UI", "Hiragino Sans", "Noto Sans JP", sans-serif;
 }
@@ -1235,13 +1237,35 @@
 }
 
 @media (max-width: 700px) {
+  .vy-chat-row-button {
+    min-width: 0;
+    gap: 10px;
+    padding: 8px;
+  }
+
   .vy-message-list-preview {
+    min-width: 0;
+    overflow: hidden;
     padding: 14px 10px;
+  }
+
+  .vy-message-content {
+    max-width: min(78%, calc(100% - 40px));
+  }
+
+  .vy-call-overlay-preview {
+    min-height: 400px;
+    padding: 36px 18px;
+  }
+
+  .vy-account-switcher-preview,
+  .vy-source-only {
+    min-width: 0;
   }
 
   .vy-local-modal-stage,
   .vy-lightbox-local {
-    min-height: 360px;
+    min-height: 330px;
   }
 }
 
@@ -1250,9 +1274,71 @@
     width: 100%;
   }
 
+  .vy-message-input-shell {
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  .vy-preview-toolbar {
+    gap: 5px;
+  }
+
+  .vy-preview-toolbar button,
+  .vy-preview-toolbar select {
+    min-height: 28px;
+    padding: 3px 8px;
+    font-size: 10px;
+  }
+
   .vy-icon-button,
   .vy-send-button {
     flex-basis: 36px;
+  }
+
+  .vy-call-overlay-preview {
+    min-height: 360px;
+    padding: 28px 12px;
+  }
+
+  .vy-call-person {
+    gap: 16px;
+  }
+
+  .vy-call-person h4 {
+    font-size: 21px;
+  }
+
+  .vy-call-controls {
+    gap: 12px;
+  }
+
+  .vy-call-controls button {
+    width: 50px;
+    height: 50px;
+  }
+
+  .vy-call-controls .hangup {
+    width: 58px;
+    height: 58px;
+  }
+
+  .vy-edit-dialog {
+    width: calc(100% - 16px);
+  }
+
+  .vy-lightbox-local {
+    min-height: 280px;
+    padding: 10px;
+  }
+
+  .vy-account-switcher-preview {
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+
+  .vy-source-only {
+    gap: 10px;
+    padding: 12px;
   }
 
 }
